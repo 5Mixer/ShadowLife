@@ -1,27 +1,36 @@
 package;
 
+import simulation.Scene;
 import kha.Assets;
 import kha.Framebuffer;
 import kha.Scheduler;
 import kha.System;
 
 class Main {
-	static function update(): Void {
-
+	var scene:Scene;
+	public function new() {
+		scene = new Scene();
+		scene.loadScene(kha.Assets.blobs.product_csv.toString());
+	}
+	public function tick(): Void {
+		if (!scene.hasHalted())
+			scene.tick();
+		else
+			trace("Halted");
 	}
 
-	static function render(framebuffer: Framebuffer): Void {
-
+	public function render(framebuffer: Framebuffer): Void {
 	}
 
 	public static function main() {
 		System.start({title: "Kha", width: 800, height: 600}, function (_) {
-			// Just loading everything is ok for small projects
 			Assets.loadEverything(function () {
-				// Avoid passing update/render directly,
-				// so replacing them via code injection works
-				Scheduler.addTimeTask(function () { update(); }, 0, 1 / 60);
-				System.notifyOnFrames(function (framebuffers) { render(framebuffers[0]); });
+
+				var tickFrequency = .5;
+
+				var main = new Main();
+				Scheduler.addTimeTask(function () { main.tick(); }, 0, tickFrequency);
+				System.notifyOnFrames(function (framebuffers) { main.render(framebuffers[0]); });
 			});
 		});
 	}

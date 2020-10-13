@@ -35,7 +35,7 @@ class Gatherer extends Character {
         // if able to take fruit from thing providing fruit, do so.
         if (!carrying) {
             for (tree in scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Tree) || Std.isOfType(a, GoldenTree))){
-                var tree = cast(Tree, Storage);
+                var tree:Storage = cast tree;
                 if (tree.hasFruit()) {
                     tree.removeFruit();
                     carrying = true;

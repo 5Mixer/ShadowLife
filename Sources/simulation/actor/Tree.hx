@@ -1,5 +1,5 @@
 package simulation.actor;
 
-class Tree extends Actor {
+class Tree extends StorageActor {
 
 }
