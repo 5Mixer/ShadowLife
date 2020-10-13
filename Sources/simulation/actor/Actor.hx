@@ -17,10 +17,14 @@ enum ActorType {
 class Actor {
     public var position:Vector2i;
     public var type:ActorType;
+    public var flaggedForDestruction = false;
     public function new(position) {
         this.position = position;
     }
     public function tick(scene:Scene) {
 
+    }
+    function destroy() {
+        flaggedForDestruction = true;
     }
 }

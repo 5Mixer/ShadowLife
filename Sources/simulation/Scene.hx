@@ -80,6 +80,8 @@ class Scene {
             actor.tick(this);
         }
 
+        actors = actors.filter(a -> !a.flaggedForDestruction);
+
         while (actorQueue.length > 0)
             actors.push(actorQueue.pop());
     }
@@ -87,11 +89,17 @@ class Scene {
     public function getActorsAtPosition(position:Vector2i) {
         var colliders:Array<Actor> = [];
         for (actor in actors) {
-            if (actor.position.x == position.x && actor.position.y == position.y) {
+            if (actor.position.x == position.x && actor.position.y == position.y && !actor.flaggedForDestruction) {
                 colliders.push(actor);
             }
         }
         return colliders;
+    }
+    public function getActorTypeAtPosition(position:Vector2i, type:ActorType) {
+        return getActorsAtPosition(position).filter(a -> a.type == type);
+    }
+    public function getActorTypesAtPosition(position:Vector2i, types:Array<ActorType>) {
+        return getActorsAtPosition(position).filter(a -> types.indexOf(a.type) != -1);
     }
 
     public function removeActor(actor:Actor) {

@@ -6,6 +6,8 @@ class Gatherer extends Character {
     override public function new(position) {
         super(position);
         type = ActorType.Gatherer;
+        direction = LEFT;
+        carrying = false;
     }
 
     override public function tick(scene:Scene) {
@@ -15,33 +17,33 @@ class Gatherer extends Character {
             move();
         }
 
-        if (scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Fence)).length > 0){
+        if (scene.getActorTypeAtPosition(position, Fence).length > 0){
             active = false;
             move(false);
         }
 
-        if (scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, MitosisPool)).length > 0){
+        if (scene.getActorTypeAtPosition(position, MitosisPool).length > 0){
             var leftGatherer = new Gatherer(position.mult(1));
-            leftGatherer.direction = leftGatherer.direction.getAnticlockwise();
+            leftGatherer.direction = direction.getAnticlockwise();
             leftGatherer.move();
             scene.queueNewActor(leftGatherer);
 
             var rightGatherer = new Gatherer(position.mult(1));
-            rightGatherer.direction = leftGatherer.direction.getClockwise();
+            rightGatherer.direction = direction.getClockwise();
             rightGatherer.move();
             scene.queueNewActor(rightGatherer);
 
-            scene.removeActor(this);
+            destroy();
             return;
         }
 
-        for (sign in scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Sign))){
+        for (sign in scene.getActorTypeAtPosition(position, Sign)) {
             direction = cast(sign, Sign).direction;
         }
 
         // if able to take fruit from thing providing fruit, do so.
         if (!carrying) {
-            for (tree in scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Tree) || Std.isOfType(a, GoldenTree))){
+            for (tree in scene.getActorTypesAtPosition(position, [Tree, GoldenTree])) {
                 var tree:Storage = cast tree;
                 if (tree.hasFruit()) {
                     tree.removeFruit();
@@ -52,7 +54,7 @@ class Gatherer extends Character {
         }
 
         // Deposit fruits if possible
-        for (storage in scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Hoard) || Std.isOfType(a, Stockpile))){
+        for (storage in scene.getActorTypesAtPosition(position, [Hoard, Stockpile])) {
             var storage = cast(storage, Storage);
             if (carrying) {
                 carrying = false;
