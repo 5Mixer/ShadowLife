@@ -8,6 +8,7 @@ class Thief extends Character {
     override public function new(position) {
         super(position);
         type = ActorType.Thief;
+        direction = UP;
     }
 
     override public function tick(scene:Scene) {
@@ -18,40 +19,45 @@ class Thief extends Character {
         }
 
         // Fence halting
-        if (scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Fence)).length > 0){
+        if (scene.getActorTypeAtPosition(position, Fence).length > 0){
             active = false;
             move(false);
         }
 
         // Mitosis behaviour
-        if (scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, MitosisPool)).length > 0){
+        if (scene.getActorTypeAtPosition(position, MitosisPool).length > 0){
             var leftThief = new Thief(position.mult(1));
-            leftThief.direction = leftThief.direction.getAnticlockwise();
+            leftThief.direction = direction.getAnticlockwise();
             leftThief.move();
             scene.queueNewActor(leftThief);
 
             var rightThief = new Thief(position.mult(1));
-            rightThief.direction = leftThief.direction.getClockwise();
+            rightThief.direction = direction.getClockwise();
             rightThief.move();
             scene.queueNewActor(rightThief);
 
-            scene.removeActor(this);
+            destroy();
             return;
         }
 
+        // Follow signs
+        for (sign in scene.getActorTypeAtPosition(position, Sign)){
+            direction = cast(sign, Sign).direction;
+        }
+
         // consume on pads
-        if (scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Pad)).length > 0){
+        if (scene.getActorTypeAtPosition(position, Pad).length > 0){
             consuming = true;
         }
 
         // Rotate on gatherers
-        if (scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Gatherer)).length > 0){
+        if (scene.getActorTypeAtPosition(position,Gatherer).length > 0){
             direction = direction.getAnticlockwise();
         }
 
         // if able to take fruit from thing providing fruit, do so.
         if (!carrying) {
-            for (tree in scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Tree) || Std.isOfType(a, GoldenTree))){
+            for (tree in scene.getActorTypesAtPosition(position, [Tree, GoldenTree])){
                 var tree:Storage = cast tree;
                 if (tree.hasFruit()) {
                     tree.removeFruit();
@@ -61,7 +67,7 @@ class Thief extends Character {
         }
 
         // Deposit fruits if possible
-        for (hoard in scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Hoard))){
+        for (hoard in scene.getActorTypeAtPosition(position, Hoard)){
             var hoard = cast(hoard, Hoard);
             if (consuming) {
                 consuming = false;
@@ -81,7 +87,7 @@ class Thief extends Character {
         }
 
         // Steal from stockpiles
-        for (stockpile in scene.getActorsAtPosition(position).filter(a -> Std.isOfType(a, Stockpile))){
+        for (stockpile in scene.getActorTypeAtPosition(position, Stockpile)){
             var stockpile = cast(stockpile, Stockpile);
             if (!carrying) {
                 if (stockpile.hasFruit()) {

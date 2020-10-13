@@ -10,7 +10,7 @@ class Main {
 	var scene:Scene;
 	public function new() {
 		scene = new Scene();
-		scene.loadScene(kha.Assets.blobs.infinite_gun_csv.toString());
+		scene.loadScene(kha.Assets.blobs.product_csv.toString());
 	}
 	public function tick(): Void {
 		if (!scene.hasHalted()){
@@ -49,7 +49,7 @@ class Main {
 		System.start({title: "Kha", width: 800, height: 600}, function (_) {
 			Assets.loadEverything(function () {
 
-				var tickFrequency = 1;
+				var tickFrequency = .1;
 
 				var main = new Main();
 				Scheduler.addTimeTask(function () { main.tick(); }, tickFrequency, tickFrequency);
