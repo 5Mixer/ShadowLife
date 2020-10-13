@@ -1,5 +1,6 @@
 package;
 
+import kha.Window;
 import simulation.actor.StorageActor;
 import simulation.Scene;
 import kha.Assets;
@@ -9,15 +10,41 @@ import kha.System;
 
 class Main {
 	var scene:Scene;
+	var ticks = 0;
+	var maxTicks = -1;
+	var paused = false;
 	public function new() {
+		#if sys
+		maxTicks = Std.parseInt(Sys.args()[1]);
+		#end
+
 		scene = new Scene();
 		scene.loadScene(kha.Assets.blobs.product_csv.toString());
 	}
 	public function tick(): Void {
+		if (paused)
+			return;
+
+		ticks++;
+
 		if (!scene.hasHalted()){
 			scene.tick();
-		} else
-			trace("Halted");
+		} else {
+			trace((ticks-1) + " ticks");
+			for (actor in scene.actors) {
+				if (actor.type == Stockpile || actor.type == Hoard) {
+					trace(cast(actor,StorageActor).berries);
+				}
+			}
+			paused = true;
+			kha.System.stop();
+			return;
+		}
+
+		if (ticks >= maxTicks && maxTicks != -1) {
+			trace("Timed out");
+			kha.System.stop();
+		}
 	}
 
 	public function render(framebuffer: Framebuffer): Void {
@@ -54,10 +81,19 @@ class Main {
 	}
 
 	public static function main() {
+		// Remove trace prefix
+		#if sys
+			haxe.Log.trace = Sys.println;
+		#end
+
+		#if js
+			haxe.Log.trace = function(msg, ?pos) js.Browser.window.console.log(msg);
+		#end
+
 		System.start({title: "ShadowLife", width: 1024, height: 768}, function (_) {
 			Assets.loadEverything(function () {
 
-				var tickFrequency = .1;
+				var tickFrequency = .01;
 
 				var main = new Main();
 				Scheduler.addTimeTask(function () { main.tick(); }, tickFrequency, tickFrequency);
