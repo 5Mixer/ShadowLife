@@ -3,8 +3,8 @@ package simulation.actor.character;
 import simulation.util.Direction;
 
 class Character extends Actor {
+    public var active = true;
     var direction = Direction.LEFT;
-    var active = true;
     var carrying = false;
 
     public function move(forwards = true) {
