@@ -60,6 +60,21 @@ class Scene {
         }
     }
 
+    public function renderCharMap() {
+        var output = "";
+        for (y in 0...16) {
+            for (x in 0...12) {
+                var actor = getActorsAtPosition(new Vector2i(x,y)).pop();
+                if (Std.isOfType(actor, Character))
+                    output += "@";
+                else 
+                    output += " ";
+            }
+            output += "\n";
+        }
+        return output;
+    }
+
     public function tick() {
         for (actor in actors) {
             actor.tick(this);

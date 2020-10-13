@@ -13,9 +13,10 @@ class Main {
 		scene.loadScene(kha.Assets.blobs.product_csv.toString());
 	}
 	public function tick(): Void {
-		if (!scene.hasHalted())
+		if (!scene.hasHalted()){
 			scene.tick();
-		else
+			trace(scene.renderCharMap());
+		} else
 			trace("Halted");
 	}
 
@@ -26,10 +27,10 @@ class Main {
 		System.start({title: "Kha", width: 800, height: 600}, function (_) {
 			Assets.loadEverything(function () {
 
-				var tickFrequency = .5;
+				var tickFrequency = .1;
 
 				var main = new Main();
-				Scheduler.addTimeTask(function () { main.tick(); }, 0, tickFrequency);
+				Scheduler.addTimeTask(function () { main.tick(); }, tickFrequency, tickFrequency);
 				System.notifyOnFrames(function (framebuffers) { main.render(framebuffers[0]); });
 			});
 		});
