@@ -83,7 +83,7 @@ class Main {
 	public static function main() {
 		// Remove trace prefix
 		#if sys
-			haxe.Log.trace = Sys.println;
+			haxe.Log.trace = function(msg, ?position) { Sys.print(msg); }
 		#end
 
 		#if js
