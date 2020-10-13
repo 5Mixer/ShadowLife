@@ -23,6 +23,7 @@ class Main {
 	public function render(framebuffer: Framebuffer): Void {
 		var g = framebuffer.g2;
 		g.begin();
+		g.drawImage(kha.Assets.images.background, 0, 0);
 		for (entity in scene.actors) {
 			g.drawImage(switch(entity.type) {
 				case Gatherer: kha.Assets.images.gatherer;
@@ -53,7 +54,7 @@ class Main {
 	}
 
 	public static function main() {
-		System.start({title: "Kha", width: 800, height: 600}, function (_) {
+		System.start({title: "ShadowLife", width: 1024, height: 768}, function (_) {
 			Assets.loadEverything(function () {
 
 				var tickFrequency = .1;
