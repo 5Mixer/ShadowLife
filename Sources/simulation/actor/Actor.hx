@@ -1,11 +1,13 @@
 package simulation.actor;
 
+import kha.math.Vector2i;
+
 class Actor {
-    var position:Vector2i;
-    public function new() {
-        position = new Vector2i();
+    public var position:Vector2i;
+    public function new(position) {
+        this.position = position;
     }
-    public function tick() {
+    public function tick(scene:Scene) {
 
     }
 }
