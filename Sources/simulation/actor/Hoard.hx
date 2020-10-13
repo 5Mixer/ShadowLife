@@ -1,5 +1,5 @@
 package simulation.actor;
 
-class Hoard extends Actor {
+class Hoard extends StorageActor {
 
 }
