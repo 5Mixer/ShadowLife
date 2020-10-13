@@ -1,6 +1,13 @@
 package simulation.actor.character;
 
+import simulation.actor.Actor.ActorType;
+
 class Gatherer extends Character {
+    override public function new(position) {
+        super(position);
+        type = ActorType.Gatherer;
+    }
+
     override public function tick(scene:Scene) {
         super.tick(scene);
 

@@ -1,7 +1,14 @@
 package simulation.actor.character;
 
+import simulation.actor.Actor.ActorType;
+
 class Thief extends Character {
     var consuming = false;
+
+    override public function new(position) {
+        super(position);
+        type = ActorType.Thief;
+    }
 
     override public function tick(scene:Scene) {
         super.tick(scene);

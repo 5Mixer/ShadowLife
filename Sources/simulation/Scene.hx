@@ -8,10 +8,10 @@ import simulation.actor.*;
 import simulation.actor.character.*;
 
 class Scene {
-    var actors:Array<Actor>;
+    public var actors:Array<Actor>;
     var actorQueue:Array<Actor>;
 
-    static var TILESIZE = 64;
+    public static var TILESIZE = 64;
 
     public function new() {
         actors = new Array<Actor>();
