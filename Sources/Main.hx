@@ -1,5 +1,6 @@
 package;
 
+import simulation.actor.StorageActor;
 import simulation.Scene;
 import kha.Assets;
 import kha.Framebuffer;
@@ -41,6 +42,12 @@ class Main {
 				case Stockpile: kha.Assets.images.cherries;
 				case Tree: kha.Assets.images.tree;
 			},entity.position.x*Scene.TILESIZE, entity.position.y*Scene.TILESIZE);
+
+			if (Std.isOfType(entity, StorageActor)) {
+				g.fontSize = 20;
+				g.font = kha.Assets.fonts.VeraMono;
+				g.drawString(cast(entity,StorageActor).berries+"", entity.position.x*Scene.TILESIZE, entity.position.y*Scene.TILESIZE);
+			}
 		}
 		g.end();
 	}
