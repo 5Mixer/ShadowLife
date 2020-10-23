@@ -118,7 +118,7 @@ class Main {
 			}
 		}
 		
-		ws = new WebSocket("wss://128.199.98.255:8080");
+		ws = new WebSocket("ws://128.199.98.255:8080");
 		var connected = false;
 		ws.onopen = function() {
 			connected = true;
