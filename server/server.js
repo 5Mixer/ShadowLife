@@ -35,7 +35,7 @@ wss.on('connection', function connection(ws) {
             console.log('received: %s', message);
             if(message == "!worldRequest") {
                 // Allocate a new world
-                ws.world = "#" + "a";//generateID();
+                ws.world = "#" + generateID();
                 var attempts = 0;
                 
                 // Generate id's without clashes in the first 5 chars
