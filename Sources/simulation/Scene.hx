@@ -1,5 +1,6 @@
 package simulation;
 
+import kha.graphics2.Graphics;
 import haxe.io.BytesData;
 import haxe.io.Bytes;
 import simulation.util.Direction;
@@ -68,6 +69,36 @@ class Scene {
 
     public function loadBytes(bytes:Bytes){
         actors = SceneBinary.fromBytes(bytes);
+    }
+
+    public function render(g:Graphics) {
+		g.drawImage(kha.Assets.images.background, 0, 0);
+		for (entity in actors) {
+			g.drawImage(switch(entity.type) {
+				case Gatherer: kha.Assets.images.gatherer;
+				case Thief: kha.Assets.images.thief;
+				case Fence: kha.Assets.images.fence;
+				case GoldenTree: kha.Assets.images.gold_tree;
+				case Hoard: kha.Assets.images.hoard;
+				case MitosisPool: kha.Assets.images.pool;
+				case Pad: kha.Assets.images.pad;
+				case Sign: 
+					switch (cast(entity,simulation.actor.Sign).direction) {
+						case UP: kha.Assets.images.up;
+						case DOWN: kha.Assets.images.down;
+						case LEFT: kha.Assets.images.left;
+						case RIGHT: kha.Assets.images.right;
+					}
+				case Stockpile: kha.Assets.images.cherries;
+				case Tree: kha.Assets.images.tree;
+			},entity.position.x*Scene.TILESIZE, entity.position.y*Scene.TILESIZE);
+
+			if (Std.isOfType(entity, StorageActor)) {
+				g.fontSize = 20;
+				g.font = kha.Assets.fonts.VeraMono;
+				g.drawString(cast(entity,StorageActor).berries+"", entity.position.x*Scene.TILESIZE, entity.position.y*Scene.TILESIZE);
+			}
+		}
     }
 
     public function tick() {

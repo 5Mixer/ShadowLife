@@ -1,5 +1,6 @@
 package;
 
+import editor.ActorBar;
 import hx.ws.Types.MessageType;
 import hx.ws.WebSocket;
 import kha.Window;
@@ -15,12 +16,15 @@ class Main {
 	var ticks = 0;
 	var maxTicks = -1;
 	var paused = false;
+	var actorBar:ActorBar;
+
 	public function new() {
 		#if sys
 		maxTicks = Std.parseInt(Sys.args()[1]);
 		#end
 
 		scene = new Scene();
+		actorBar = new ActorBar();
 		
 		var ws = new WebSocket("ws://localhost:8080");
 		var connected = false;
@@ -66,32 +70,10 @@ class Main {
 	public function render(framebuffer: Framebuffer): Void {
 		var g = framebuffer.g2;
 		g.begin();
-		g.drawImage(kha.Assets.images.background, 0, 0);
-		for (entity in scene.actors) {
-			g.drawImage(switch(entity.type) {
-				case Gatherer: kha.Assets.images.gatherer;
-				case Thief: kha.Assets.images.thief;
-				case Fence: kha.Assets.images.fence;
-				case GoldenTree: kha.Assets.images.gold_tree;
-				case Hoard: kha.Assets.images.hoard;
-				case MitosisPool: kha.Assets.images.pool;
-				case Pad: kha.Assets.images.pad;
-				case Sign: 
-					switch (cast(entity,simulation.actor.Sign).direction) {
-						case UP: kha.Assets.images.up;
-						case DOWN: kha.Assets.images.down;
-						case LEFT: kha.Assets.images.left;
-						case RIGHT: kha.Assets.images.right;
-					}
-				case Stockpile: kha.Assets.images.cherries;
-				case Tree: kha.Assets.images.tree;
-			},entity.position.x*Scene.TILESIZE, entity.position.y*Scene.TILESIZE);
+		scene.render(g);
 
-			if (Std.isOfType(entity, StorageActor)) {
-				g.fontSize = 20;
-				g.font = kha.Assets.fonts.VeraMono;
-				g.drawString(cast(entity,StorageActor).berries+"", entity.position.x*Scene.TILESIZE, entity.position.y*Scene.TILESIZE);
-			}
+		if (paused) {
+			actorBar.render(g);
 		}
 		g.end();
 	}
