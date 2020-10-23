@@ -1,5 +1,7 @@
 package simulation;
 
+import haxe.io.BytesData;
+import haxe.io.Bytes;
 import simulation.util.Direction;
 import simulation.actor.character.Character;
 import simulation.actor.Actor;
@@ -60,19 +62,8 @@ class Scene {
         }
     }
 
-    public function renderCharMap() {
-        var output = "";
-        for (y in 0...16) {
-            for (x in 0...12) {
-                var actor = getActorsAtPosition(new Vector2i(x,y)).pop();
-                if (Std.isOfType(actor, Character))
-                    output += "@";
-                else 
-                    output += " ";
-            }
-            output += "\n";
-        }
-        return output;
+    public function getBytes() {
+        return SceneBinary.getBytes(actors);
     }
 
     public function tick() {
