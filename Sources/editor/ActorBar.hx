@@ -9,7 +9,7 @@ import kha.graphics2.Graphics;
 class ActorBar {
     static final backgroundColour = kha.Color.fromBytes(191, 184, 187);
     static final borderColour = kha.Color.fromBytes(91, 84, 87);
-    static final height = 85;
+    public static final height = 85;
     var options:Array<ActorBarEntry> = [];
     public var activeOption:ActorBarEntry;
 
@@ -28,10 +28,10 @@ class ActorBar {
         options.push(new ActorBarEntry(ActorType.Stockpile, kha.Assets.images.cherries));
         options.push(new ActorBarEntry(ActorType.Tree, kha.Assets.images.tree));
 
-        options.push(new SignActorBarEntry(ActorType.Tree, kha.Assets.images.up, Direction.UP));
-        options.push(new SignActorBarEntry(ActorType.Tree, kha.Assets.images.down, Direction.DOWN));
-        options.push(new SignActorBarEntry(ActorType.Tree, kha.Assets.images.left, Direction.LEFT));
-        options.push(new SignActorBarEntry(ActorType.Tree, kha.Assets.images.right, Direction.RIGHT));
+        options.push(new SignActorBarEntry(ActorType.Sign, kha.Assets.images.up, Direction.UP));
+        options.push(new SignActorBarEntry(ActorType.Sign, kha.Assets.images.down, Direction.DOWN));
+        options.push(new SignActorBarEntry(ActorType.Sign, kha.Assets.images.left, Direction.LEFT));
+        options.push(new SignActorBarEntry(ActorType.Sign, kha.Assets.images.right, Direction.RIGHT));
 
         activeOption = options[0];
 

@@ -11,7 +11,7 @@ class Camera {
 
 	public function new () {
 		position = new Vector2();
-		scale = .5;
+		scale = 1;
 	}
 	public function zoomOn(screenPoint:Vector2, amount:Float) {
 		var oldWorldPos = viewToWorld(screenPoint);

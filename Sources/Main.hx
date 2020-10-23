@@ -1,11 +1,14 @@
 package;
 
+import editor.SignActorBarEntry;
+import kha.math.Vector2i;
 import kha.input.Mouse;
 import editor.ActorBar;
 import hx.ws.Types.MessageType;
 import hx.ws.WebSocket;
 import kha.Window;
-import simulation.actor.StorageActor;
+import simulation.actor.*;
+import simulation.actor.character.*;
 import simulation.Scene;
 import kha.Assets;
 import kha.Framebuffer;
@@ -36,6 +39,26 @@ class Main {
 			if (input.middleMouseButtonDown) {
 				camera.position.x -= dx;
 				camera.position.y -= dy;
+			}
+			if (input.leftMouseButtonDown && input.getMouseScreenPosition().y > ActorBar.height) {
+				var worldPosition = input.getMouseWorldPosition();
+				var gridPosition = new Vector2i(Math.floor(worldPosition.x/Scene.TILESIZE), Math.floor(worldPosition.y/Scene.TILESIZE));
+
+				for (actor in scene.getActorsAtPosition(gridPosition))
+					scene.actors.remove(actor);
+				
+				scene.actors.push(switch actorBar.activeOption.actorType {
+					case Gatherer: new Gatherer(gridPosition);
+					case Thief: new Thief(gridPosition);
+					case Fence: new Fence(gridPosition);
+					case GoldenTree: new GoldenTree(gridPosition);
+					case Hoard: new Hoard(gridPosition);
+					case MitosisPool: new MitosisPool(gridPosition);
+					case Pad: new Pad(gridPosition);
+					case Sign: new Sign(gridPosition, cast(actorBar.activeOption, SignActorBarEntry).direction);
+					case Stockpile: new Stockpile(gridPosition);
+					case Tree: new Tree(gridPosition);
+				});
 			}
 		};
 		input.onScroll = function(delta) {
