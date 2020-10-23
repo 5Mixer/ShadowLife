@@ -26,7 +26,7 @@ wss.on('connection', function connection(ws) {
             worlds[ws.world] = message;
 
             wss.clients.forEach(function each(client) {
-                if (client.readyState === WebSocket.OPEN && client !== wss && client.world == ws.world) {
+                if (client.readyState === WebSocket.OPEN && client !== ws && client.world == ws.world) {
                     client.send(message);
                 }
             });

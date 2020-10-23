@@ -59,12 +59,28 @@ class Main {
 
 		var y = ActorBar.height;
 		viewButton = new Button(Assets.images.viewButton, new Vector2(10, y + 10), function() {
-			SystemImpl.copyToClipboard("test");
+			var url = worldID;
+
+			#if (js)
+				untyped {
+					url = window.location.href.split("/")[0] + "/" + worldID.substr(0,5);
+				}
+			#end
+
+			SystemImpl.copyToClipboard(url);
 		});
 		y += Assets.images.viewButton.height + 10;
 
 		editButton = new Button(Assets.images.editButton, new Vector2(10, y + 10), function() {
+			var url = worldID;
 
+			#if (js)
+				untyped {
+					url = window.location.href.split("/")[0] + "/" + worldID;
+				}
+			#end
+
+			SystemImpl.copyToClipboard(url);
 		});
 		
 		y += Assets.images.viewButton.height + 10;
@@ -162,6 +178,7 @@ class Main {
 			if (lastNetState == scene.getBytes() || !editedLevelNetState || !paused) {
 				return;
 			}
+			editedLevelNetState = false;
 			ws.send(scene.getBytes());
 		}, 1, .05);
 	}
