@@ -20,9 +20,12 @@ class Camera {
 		} else {
 			scale /= amount * zoomSpeed;
 		} 
-		scale = Math.max(0.5, Math.min(5, scale));
+		scale = Math.max(0.2, Math.min(2, scale));
 		var newWorldPos = viewToWorld(screenPoint);
-		position = position.add(worldToView(oldWorldPos).sub(worldToView(newWorldPos)));
+        position = position.add(worldToView(oldWorldPos).sub(worldToView(newWorldPos)));
+        
+        position.x = Math.max(0,position.x);
+        position.y = Math.max(0,position.y);
 	}
 	public function worldToView(point:Vector2) {
 		return point.mult(scale).sub(position);
@@ -34,6 +37,8 @@ class Camera {
 		return FastMatrix3.translation(-(position.x), -(position.y)).multmat(FastMatrix3.scale(scale, scale));
 	}
 	public function transform (g:Graphics) {
+        position.x = Math.max(0,position.x);
+        position.y = Math.max(0,position.y);
 		g.pushTransformation(getTransformation());
 	}
 	public function reset (g:Graphics) {

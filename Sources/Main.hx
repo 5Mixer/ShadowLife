@@ -1,5 +1,9 @@
 package;
 
+import haxe.io.Bytes;
+import kha.SystemImpl;
+import kha.math.Vector2;
+import editor.Button;
 import editor.SignActorBarEntry;
 import kha.math.Vector2i;
 import kha.input.Mouse;
@@ -21,8 +25,14 @@ class Main {
 	var scene:Scene;
 	var ticks = 0;
 	var maxTicks = -1;
-	var paused = false;
+	var paused = true;
 	var actorBar:ActorBar;
+
+	var viewButton:Button;
+	var editButton:Button;
+	var goButton:Button;
+
+	var worldstatePreSimulation:Bytes;
 
 	public function new() {
 		#if sys
@@ -34,6 +44,22 @@ class Main {
 
 		camera = new Camera();
 		input = new Input(camera);
+
+		var y = ActorBar.height;
+		viewButton = new Button(Assets.images.viewButton, new Vector2(10, y + 10), function() {
+			SystemImpl.copyToClipboard("test");
+		});
+		y += Assets.images.viewButton.height + 10;
+
+		editButton = new Button(Assets.images.editButton, new Vector2(10, y + 10), function() {
+
+		});
+		
+		y += Assets.images.viewButton.height + 10;
+
+		goButton = new Button(Assets.images.goButton, new Vector2(10, y + 10), function() {
+			startSimulation();
+		});
 
 		input.onMouseMove = function(dx,dy) {
 			if (input.middleMouseButtonDown) {
@@ -69,8 +95,8 @@ class Main {
 			// }
 		}
 		input.onEscape = function() {
-			if (paused) {
-				paused = false;
+			if (!paused) {
+				stopSimulation();
 			}
 		}
 		
@@ -90,6 +116,16 @@ class Main {
 			}
 		}
 	}
+
+	function startSimulation() {
+		worldstatePreSimulation = scene.getBytes();
+		paused = false;
+	}
+	function stopSimulation() {
+		scene.actors = [];
+		scene.loadBytes(worldstatePreSimulation);
+		paused = true;
+	}
 	public function tick(): Void {
 		if (paused)
 			return;
@@ -105,7 +141,7 @@ class Main {
 					trace(cast(actor,StorageActor).berries);
 				}
 			}
-			paused = true;
+			stopSimulation();
 			return;
 		}
 
@@ -125,6 +161,9 @@ class Main {
 
 		if (paused) {
 			actorBar.render(g);
+			editButton.render(g);
+			viewButton.render(g);
+			goButton.render(g);
 		}
 		g.end();
 	}

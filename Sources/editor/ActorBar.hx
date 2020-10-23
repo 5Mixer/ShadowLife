@@ -9,6 +9,8 @@ import kha.graphics2.Graphics;
 class ActorBar {
     static final backgroundColour = kha.Color.fromBytes(191, 184, 187);
     static final borderColour = kha.Color.fromBytes(91, 84, 87);
+    static final itemBackground = kha.Color.fromBytes(91, 84, 87);
+    static final itemBackgroundHover = kha.Color.fromBytes(111, 104, 107);
     public static final height = 85;
     var options:Array<ActorBarEntry> = [];
     public var activeOption:ActorBarEntry;
@@ -58,6 +60,10 @@ class ActorBar {
         var x = 10;
 
         for (option in options) {
+            g.color = focused && x < mousex && mousex < x + option.image.width ? itemBackgroundHover : itemBackground;
+            g.fillRect(x,height/2-option.image.height/2,option.image.width,option.image.height);
+
+            g.color = kha.Color.White;
             g.drawImage(option.image, x, height/2-option.image.height/2);
 
             if (focused && mouseIsDown && x < mousex && mousex < x + option.image.width) {
