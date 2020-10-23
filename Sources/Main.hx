@@ -86,6 +86,13 @@ class Main {
 					case Tree: new Tree(gridPosition);
 				});
 			}
+			if (input.rightMouseButtonDown && input.getMouseScreenPosition().y > ActorBar.height) {
+				var worldPosition = input.getMouseWorldPosition();
+				var gridPosition = new Vector2i(Math.floor(worldPosition.x/Scene.TILESIZE), Math.floor(worldPosition.y/Scene.TILESIZE));
+
+				for (actor in scene.getActorsAtPosition(gridPosition))
+					scene.actors.remove(actor);
+			}
 		};
 		input.onScroll = function(delta) {
 			// if (mouseInUI()) {
@@ -153,13 +160,23 @@ class Main {
 
 	public function render(framebuffer: Framebuffer): Void {
 		var g = framebuffer.g2;
-		g.begin();
+		g.begin(kha.Color.fromBytes(95,151,0));
 
 		camera.transform(g);
 		scene.render(g);
 		camera.reset(g);
 
 		if (paused) {
+			// Render place preview
+			if (input.getMouseScreenPosition().y > ActorBar.height) {
+				var worldPosition = input.getMouseWorldPosition();
+				var gridPosition = new Vector2i(Math.floor(worldPosition.x/Scene.TILESIZE), Math.floor(worldPosition.y/Scene.TILESIZE));
+				g.color = kha.Color.White;
+				camera.transform(g);
+				g.drawRect(gridPosition.x*Scene.TILESIZE, gridPosition.y*Scene.TILESIZE, Scene.TILESIZE, Scene.TILESIZE, 4);
+				camera.reset(g);
+			}
+
 			actorBar.render(g);
 			editButton.render(g);
 			viewButton.render(g);
