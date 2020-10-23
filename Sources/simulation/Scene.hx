@@ -20,7 +20,7 @@ class Scene {
         actorQueue = new Array<Actor>();
     }
 
-    public function loadScene(sceneData:String){
+    public function loadSceneText(sceneData:String){
         var lineNumber = 1;
         for (line in sceneData.split("\n")) {
             var lineValues = line.split(",");
@@ -64,6 +64,10 @@ class Scene {
 
     public function getBytes() {
         return SceneBinary.getBytes(actors);
+    }
+
+    public function loadBytes(bytes:Bytes){
+        actors = SceneBinary.fromBytes(bytes);
     }
 
     public function tick() {

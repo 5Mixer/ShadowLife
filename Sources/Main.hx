@@ -1,5 +1,7 @@
 package;
 
+import hx.ws.Types.MessageType;
+import hx.ws.WebSocket;
 import kha.Window;
 import simulation.actor.StorageActor;
 import simulation.Scene;
@@ -19,7 +21,22 @@ class Main {
 		#end
 
 		scene = new Scene();
-		scene.loadScene(kha.Assets.blobs.product_csv.toString());
+		
+		var ws = new WebSocket("ws://localhost:8080");
+		var connected = false;
+		ws.onopen = function() {
+			connected = true;
+		}
+		ws.onmessage = function(message:MessageType) {
+			switch (message){
+				case BytesMessage(content): {
+
+				}
+				case StrMessage(content): {
+
+				}
+			}
+		}
 	}
 	public function tick(): Void {
 		if (paused)
@@ -37,7 +54,6 @@ class Main {
 				}
 			}
 			paused = true;
-			kha.System.stop();
 			return;
 		}
 

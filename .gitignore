@@ -2,3 +2,4 @@
 /build
 /korefile.js
 .vscode
+server/node_modules
