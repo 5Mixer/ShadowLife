@@ -34,9 +34,21 @@ class Main {
 
 	var worldstatePreSimulation:Bytes;
 
+	var ws:WebSocket;
+	var worldID = "";
+
+	var lastNetState:Bytes;
+	var editedLevelNetState = false;
+
 	public function new() {
 		#if sys
 		maxTicks = Std.parseInt(Sys.args()[1]);
+		#end
+
+		#if (js)
+			untyped {
+				worldID = window.location.href.split("/")[window.location.href.split("/").length-1];
+			}
 		#end
 
 		scene = new Scene();
@@ -66,7 +78,7 @@ class Main {
 				camera.position.x -= dx;
 				camera.position.y -= dy;
 			}
-			if (input.leftMouseButtonDown && input.getMouseScreenPosition().y > ActorBar.height) {
+			if (input.leftMouseButtonDown && input.getMouseScreenPosition().y > ActorBar.height && paused) {
 				var worldPosition = input.getMouseWorldPosition();
 				var gridPosition = new Vector2i(Math.floor(worldPosition.x/Scene.TILESIZE), Math.floor(worldPosition.y/Scene.TILESIZE));
 
@@ -85,21 +97,20 @@ class Main {
 					case Stockpile: new Stockpile(gridPosition);
 					case Tree: new Tree(gridPosition);
 				});
+				editedLevelNetState = true;
 			}
-			if (input.rightMouseButtonDown && input.getMouseScreenPosition().y > ActorBar.height) {
+			if (input.rightMouseButtonDown && input.getMouseScreenPosition().y > ActorBar.height && paused) {
 				var worldPosition = input.getMouseWorldPosition();
 				var gridPosition = new Vector2i(Math.floor(worldPosition.x/Scene.TILESIZE), Math.floor(worldPosition.y/Scene.TILESIZE));
 
 				for (actor in scene.getActorsAtPosition(gridPosition))
 					scene.actors.remove(actor);
+
+				editedLevelNetState = true;
 			}
 		};
 		input.onScroll = function(delta) {
-			// if (mouseInUI()) {
-			// 	ui.scroll(delta);
-			// }else{
-				camera.zoomOn(input.getMouseScreenPosition(), delta);
-			// }
+			camera.zoomOn(input.getMouseScreenPosition(), delta);
 		}
 		input.onEscape = function() {
 			if (!paused) {
@@ -107,21 +118,52 @@ class Main {
 			}
 		}
 		
-		var ws = new WebSocket("ws://localhost:8080");
+		ws = new WebSocket("ws://localhost:8080");
 		var connected = false;
 		ws.onopen = function() {
 			connected = true;
+
+			if (worldID.length == 0) {
+				ws.send("!worldRequest");
+			}else{
+				ws.send("!joinWorld:"+worldID);
+				ws.send("!updateRequest");
+			}
 		}
 		ws.onmessage = function(message:MessageType) {
 			switch (message){
 				case BytesMessage(content): {
-
+					if (!paused) {
+						// Ignore world updates while paused
+						return;
+					}
+					var bytes = content.readAllAvailableBytes();
+					lastNetState = bytes;
+					editedLevelNetState = false;
+					scene.loadBytes(bytes);
 				}
 				case StrMessage(content): {
+					if (content.indexOf("!worldAllocated") == 0) {
+						worldID = content.split(":")[1];
 
+						#if (js)
+							untyped {
+								window.history.pushState({}, null, worldID);
+							}
+						#end
+
+						ws.send("!joinWorld:"+worldID);
+					}
 				}
 			}
 		}
+
+		Scheduler.addTimeTask(function sendWorld(){
+			if (lastNetState == scene.getBytes() || !editedLevelNetState || !paused) {
+				return;
+			}
+			ws.send(scene.getBytes());
+		}, 1, .05);
 	}
 
 	function startSimulation() {
@@ -131,6 +173,7 @@ class Main {
 	function stopSimulation() {
 		scene.actors = [];
 		scene.loadBytes(worldstatePreSimulation);
+		ws.send("!updateRequest");
 		paused = true;
 	}
 	public function tick(): Void {
